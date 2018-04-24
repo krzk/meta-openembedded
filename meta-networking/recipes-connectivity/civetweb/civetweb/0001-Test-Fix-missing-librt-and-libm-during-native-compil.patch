@@ -1,7 +1,7 @@
 From cd93e2c538cecb3192fd24c0fbd6e834d0c47eec Mon Sep 17 00:00:00 2001
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Date: Wed, 18 Apr 2018 14:11:52 +0200
-Subject: [PATCH] Test: Fix missing librt and libm during native compilation
+Subject: [PATCH] Unittest: Fix missing librt and libm during native compilation
 
 civetweb looks for librt and libm in weird places and for native build
 this fails:
@@ -15,13 +15,13 @@ case.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- test/CMakeLists.txt | 4 ++++
+ unittest/CMakeLists.txt | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/test/CMakeLists.txt b/test/CMakeLists.txt
+diff --git a/unittest/CMakeLists.txt b/unittest/CMakeLists.txt
 index f34b2e0e4ce4..05d25702178c 100644
---- a/test/CMakeLists.txt
-+++ b/test/CMakeLists.txt
+--- a/unittest/CMakeLists.txt
++++ b/unittest/CMakeLists.txt
 @@ -60,10 +60,14 @@ endif()
  find_package(LibM)
  if (LIBM_FOUND)
