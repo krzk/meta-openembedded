@@ -11,15 +11,16 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 COMPATIBLE_HOST = "(i.86|x86_64|arm|aarch64).*-linux"
 
-SRC_URI = " \
-    http://ezix.org/software/files/lshw-B.${PV}.tar.gz \
-    file://cross-compile.patch \
-    file://0001-Makefile-Use-supplied-LDFLAGS-to-silence-OE-GNU_HASH.patch \
-"
-SRC_URI[md5sum] = "8671c6d94d6324a744b7f21f1bfecfd2"
-SRC_URI[sha256sum] = "ae22ef11c934364be4fd2a0a1a7aadf4495a0251ec6979da280d342a89ca3c2f"
+SRCREV = "20cda77239e8604e798b87a0441e694edb0214d1"
+PV = "02.18+git${SRCPV}"
+SRC_URI = "git://github.com/lyonel/lshw.git \
+           file://cross-compile.patch \
+           file://0001-Makefile-Use-supplied-LDFLAGS-to-silence-OE-GNU_HASH.patch \
+           file://0003-sysfs-Fix-basename-build-with-musl.patch \
+           file://0004-Revert-fix-714-system-width-detection.patch \
+           "
 
-S = "${WORKDIR}/lshw-B.${PV}"
+S = "${WORKDIR}/git"
 
 do_compile() {
     # build core only - don't ship gui
