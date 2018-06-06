@@ -9,10 +9,11 @@ SECTION = "console/tools"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-DEPENDS = " \
-    pciutils \
-    usbutils \
-"
+PACKAGECONFIG ??= "pciutils usbutils zlib"
+# Choose between bundled or external pci.ids and usb.ids:
+PACKAGECONFIG[pciutils] = ",,,pciutils"
+PACKAGECONFIG[usbutils] = ",,,usbutils"
+PACKAGECONFIG[zlib] = "ZLIB=1,,zlib,"
 COMPATIBLE_HOST = "(i.86|x86_64|arm|aarch64).*-linux"
 
 SRC_URI = " \
@@ -27,11 +28,16 @@ S = "${WORKDIR}/lshw-B.${PV}"
 
 do_compile() {
     # build core only - don't ship gui
-    oe_runmake -C src core
+    oe_runmake -C src core ${PACKAGECONFIG_CONFARGS}
 }
 
 do_install() {
-    oe_runmake install DESTDIR=${D}
-    # data files provided by dependencies
-    rm -rf ${D}/usr/share/lshw
+    oe_runmake install DESTDIR=${D} ${PACKAGECONFIG_CONFARGS}
+
+    if ${@bb.utils.contains('PACKAGECONFIG', 'pciutils', 'true', 'false', d)}; then
+        rm -rf ${D}${datadir}/lshw/pci.ids*
+    fi
+    if ${@bb.utils.contains('PACKAGECONFIG', 'usbutils', 'true', 'false', d)}; then
+        rm -rf ${D}${datadir}/lshw/usb.ids*
+    fi
 }
