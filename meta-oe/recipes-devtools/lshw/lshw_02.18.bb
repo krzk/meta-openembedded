@@ -9,10 +9,9 @@ SECTION = "console/tools"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://COPYING;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-DEPENDS = " \
-    pciutils \
-    usbutils \
-"
+PACKAGECONFIG ??= "pciutils"
+# Choose between bundled or external pci.ids:
+PACKAGECONFIG[pciutils] = ",,,pciutils"
 COMPATIBLE_HOST = "(i.86|x86_64|arm|aarch64).*-linux"
 
 SRC_URI = " \
@@ -32,6 +31,13 @@ do_compile() {
 
 do_install() {
     oe_runmake install DESTDIR=${D}
-    # data files provided by dependencies
-    rm -rf ${D}/usr/share/lshw
+
+    if ${@bb.utils.contains('PACKAGECONFIG', 'pciutils', 'true', 'false', d)}; then
+        rm -rf ${D}${datadir}/lshw/pci.ids*
+    fi
+    # So far lshw uses during runtime only pci.ids and usb.ids
+    # The manuf.txt and oui.txt can be removed to save space
+    rm -rf ${D}${datadir}/lshw/manuf.txt*
+    rm -rf ${D}${datadir}/lshw/oui.txt*
+    rmdir --ignore-fail-on-non-empty ${D}${datadir}/lshw
 }
